@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Kesyukuran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-content { animation: fadeIn 0.7s ease-out forwards; }
+        .shake { animation: shake 0.3s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        body { transition: background-color 0.5s ease; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const questions = [
+            // FASA 1: ALLAH
+            { id: 1, phase: 1, text: "Anda sedang membaca skrin ini sekarang. Adakah anda boleh melihat dan memahaminya dengan jelas?", type: "choice", options: [{ text: "Ya, Alhamdulillah", correct: true }, { text: "Tidak nampak apa-apa", correct: false }] },
+            { id: 2, phase: 1, text: "Jantung anda sedang mengepam darah ke otak sekarang tanpa henti. Adakah anda yang mengawalnya sendiri?", type: "choice", options: [{ text: "Tidak, ia automatik", correct: true }, { text: "Ya, saya yang arahkan", correct: false }] },
+            { id: 3, phase: 1, text: "Jika anda perlu 'membayar' untuk setiap nafas yang diambil tadi, mampukah anda beli oksigen untuk seumur hidup?", type: "choice", options: [{ text: "Sama sekali tidak", correct: true }, { text: "Ya, saya kaya", correct: false }] },
+            { id: 4, phase: 1, text: "Lihat tangan anda. Adakah anda yang mencipta sendiri urat saraf dan tulang yang membolehkan anda scroll skrin ini?", type: "choice", options: [{ text: "Bukan saya", correct: true }, { text: "Ya, rekaan saya", correct: false }] },
+            { id: 5, phase: 1, text: "Jika esok pagi semua nikmat melihat dan bergerak ditarik balik, adakah anda masih mempunyai kuasa untuk melawan?", type: "choice", options: [{ text: "Saya tiada daya", correct: true }, { text: "Ya, saya ada cara", correct: false }] },
+            { id: 6, phase: 1, text: "Jadi, adakah tubuh badan yang anda 'pakai' sekarang ini sebenarnya milik mutlak anda?", type: "choice", options: [{ text: "Hanya pinjaman", correct: true }, { text: "Milik saya selamanya", correct: false }] },
+            { id: 7, phase: 1, text: "Siapa yang meminjamkan segalanya tanpa minta bayaran satu sen pun dari anda?", type: "input", expected: ["allah", "tuhan", "pencipta", "rab"] },
+            { id: 8, phase: 1, text: "Kalau 'Tuan Punya' badan ni panggil anda 5 kali sehari untuk solat, adakah anda rasa anda terlalu sibuk untuk-Nya?", type: "choice", options: [{ text: "Tidak, saya malu", correct: true }, { text: "Ya, saya sibuk", correct: false }] },
+            { id: 9, phase: 1, text: "Adakah anda bersedia untuk lebih mensyukuri nikmat-Nya selepas ini?", type: "choice", options: [{ text: "Ya, insyaAllah", correct: true }, { text: "Mungkin tidak", correct: false }] },
+            { id: 10, phase: 1, text: "Siapa yang paling mencintai anda lebih daripada diri anda sendiri?", type: "choice", options: [{ text: "Allah SWT", correct: true }, { text: "Diri sendiri", correct: false }] },
+
+            // FASA 2: IBU BAPA
+            { id: 11, phase: 2, text: "Pernahkah anda rasa lapar yang amat sangat tapi tiada makanan langsung di rumah?", type: "choice", options: [{ text: "Tak Pernah (Ada makanan)", correct: true }, { text: "Sering lapar kosong", correct: false }] },
+            { id: 12, phase: 2, text: "Masa kecil dulu, adakah anda cari duit sendiri untuk beli susu dan lampin anda?", type: "choice", options: [{ text: "Disediakan mak ayah", correct: true }, { text: "Saya cari sendiri", correct: false }] },
+            { id: 13, phase: 2, text: "Bila anda jatuh sakit, siapa yang paling risau dan kurang tidur menjaga anda?", type: "choice", options: [{ text: "Ibu dan Bapa", correct: true }, { text: "Orang asing", correct: false }] },
+            { id: 14, phase: 2, text: "Baju dan telefon yang anda guna sekarang, adakah ia hasil titisan peluh anda sejak lahir?", type: "choice", options: [{ text: "Banyak jasa mak ayah", correct: true }, { text: "Semua usaha saya", correct: false }] },
+            { id: 15, phase: 2, text: "Anda tahu ada anak yatim yang sanggup buat apa saja demi pelukan seorang ibu?", type: "choice", options: [{ text: "Ya, saya sedar", correct: true }, { text: "Tidak peduli", correct: false }] },
+            { id: 16, phase: 2, text: "Pernahkah anda terfikir impian mak ayah yang terpaksa dikuburkan demi masa depan anda?", type: "choice", options: [{ text: "Baru terfikir", correct: true }, { text: "Mereka tak perlu impian", correct: false }] },
+            { id: 17, phase: 2, text: "Adakah adil untuk anda berkasar suara sedangkan mereka melayan anda dengan lembut masa kecil?", type: "choice", options: [{ text: "Sangat tidak adil", correct: true }, { text: "Biasa la tu", correct: false }] },
+            { id: 18, phase: 2, text: "Jika hari ini mereka pergi selamanya, adakah bakti anda sudah cukup untuk membayar jasa mereka?", type: "choice", options: [{ text: "Masih jauh mencukupi", correct: true }, { text: "Dah lebih cukup", correct: false }] },
+            { id: 19, phase: 2, text: "Adakah anda mahu peluk dan minta maaf pada mereka hari ini?", type: "choice", options: [{ text: "Ya, mahu sekali", correct: true }, { text: "Nanti-nanti lah", correct: false }] },
+            { id: 20, phase: 2, text: "Siapa manusia yang paling patut anda hargai di dunia ini?", type: "input", expected: ["mak", "ayah", "ibu", "bapa", "mama", "papa", "umi", "abah", "parents", "ma", "pa", "baba", "daddy", "mommy"] }
+        ];
+
+        function App() {
+            const [step, setStep] = useState(0);
+            const [view, setView] = useState('quiz'); 
+            const [inputValue, setInputValue] = useState('');
+            const [errorMsg, setErrorMsg] = useState('');
+            const [isError, setIsError] = useState(false);
+            const [showAnimation, setShowAnimation] = useState(true);
+
+            const playBuzzer = () => {
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(100, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.4);
+                } catch (e) {}
+            };
+
+            useEffect(() => {
+                setShowAnimation(false);
+                const timer = setTimeout(() => setShowAnimation(true), 10);
+                return () => clearTimeout(timer);
+            }, [step, view]);
+
+            const currentQ = questions[step];
+            const progress = (step / questions.length) * 100;
+
+            const handleChoice = (option) => {
+                if (option.correct) {
+                    setIsError(false);
+                    setErrorMsg('');
+                    handleNext();
+                } else {
+                    setIsError(true);
+                    setErrorMsg("Fikir semula... Jangan bohong pada diri sendiri.");
+                    playBuzzer();
+                    setTimeout(() => setIsError(false), 800);
+                }
+            };
+
+            const handleNext = () => {
+                setInputValue('');
+                if (step === 9) setView('popup1');
+                else if (step === 19) setView('finalPopup');
+                else setStep(step + 1);
+            };
+
+            const handleInputSubmit = (e) => {
+                e.preventDefault();
+                const isMatch = currentQ.expected.some(k => inputValue.toLowerCase().includes(k));
+                if (isMatch) {
+                    setIsError(false);
+                    handleNext();
+                } else {
+                    setIsError(true);
+                    setErrorMsg("Jawapannya ada dalam hati anda...");
+                    playBuzzer();
+                    setTimeout(() => setIsError(false), 800);
+                }
+            };
+
+            const getBgColor = () => {
+                if (isError) return 'bg-red-950';
+                if (view === 'popup1') return 'bg-blue-900';
+                if (view === 'transition') return 'bg-amber-900';
+                if (view === 'finalPopup') return 'bg-stone-950';
+                if (view === 'cta') return 'bg-slate-900';
+                return currentQ?.phase === 1 ? 'bg-slate-950' : 'bg-amber-950';
+            };
+
+            return (
+                <div className={`min-h-screen flex items-center justify-center p-6 transition-colors duration-300 ${getBgColor()} text-white font-sans`}>
+                    <div className={`w-full max-w-md ${isError ? 'shake' : ''}`}>
+                        {view === 'quiz' && showAnimation && (
+                            <div className="animate-content space-y-10">
+                                <div className="text-center">
+                                    <span className="text-white/30 text-xs tracking-[0.3em] uppercase font-bold">
+                                        {step === 0 ? "Bersedia?" : `Refleksi ${step + 1}`}
+                                    </span>
+                                    <h1 className="text-2xl md:text-3xl font-light leading-relaxed mt-4">
+                                        {currentQ.text}
+                                    </h1>
+                                </div>
+                                <div className="space-y-4">
+                                    {currentQ.type === 'choice' ? (
+                                        currentQ.options.map((opt, i) => (
+                                            <button key={i} onClick={() => handleChoice(opt)} className="w-full py-5 px-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 active:scale-95 transition-all text-lg font-medium">
+                                                {opt.text}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        <form onSubmit={handleInputSubmit} className="space-y-4">
+                                            <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} className="w-full py-5 px-6 rounded-2xl bg-white/5 border border-white/20 text-center text-xl focus:border-white/50 focus:outline-none" placeholder="Taip di sini..." autoFocus />
+                                            <button type="submit" className="w-full py-5 bg-white text-black rounded-2xl font-bold">Sahkan</button>
+                                        </form>
+                                    )}
+                                    {errorMsg && <p className="text-red-400 text-center text-sm animate-pulse font-medium">{errorMsg}</p>}
+                                </div>
+                                <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                    <div className="bg-white/40 h-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'popup1' && (
+                            <div className="animate-content text-center space-y-8 bg-white/5 p-10 rounded-3xl border border-white/10">
+                                <h2 className="text-3xl font-bold">INGAT...</h2>
+                                <p className="text-lg text-white/70">Semua yang kau ada datang dari Allah—bukan milik kau sepenuhnya. Jadi kenapa masih sombong?
+
+Hakikatnya, tak semua orang diberi peluang untuk sedar. Bila hati kau mula rasa dan fikir, itu tanda Allah masih sayang dan nak kau kembali.
+
+Jangan sia-siakan. Rendahkan hati, dan cari redha-Nya.</p>
+                                <button onClick={() => setView('transition')} className="w-full py-4 bg-white text-blue-900 rounded-xl font-bold">Teruskan</button>
+                            </div>
+                        )}
+
+                        {view === 'transition' && (
+                            <div className="animate-content text-center space-y-8">
+                                <h2 className="text-3xl font-light">Selesai dengan Pencipta?</h2>
+                                <p className="text-white/60">Sekarang mari lihat 'tangan-tangan' yang Allah kirimkan untuk menjaga anda sejak hari pertama.</p>
+                                <button onClick={() => { setStep(10); setView('quiz'); }} className="px-10 py-4 bg-amber-600 rounded-full font-bold">Mula Bahagian 2</button>
+                            </div>
+                        )}
+
+                        {view === 'finalPopup' && (
+                            <div className="animate-content space-y-8 bg-white/5 p-10 rounded-3xl border border-red-500/20">
+                                <h2 className="text-2xl font-bold text-center">Jangan Tunggu Kubur Berbicara</h2>
+                                <div className="space-y-4 text-white/70 leading-relaxed">
+                                    <p>Hargai mereka sementara masih ada nafas. Jangan sampai bila dah jadi tanah baru nak cari mana kubur mereka.</p>
+                                    <p className="text-white italic">"Kirim doa tu percuma, tapi kenapa kau jarang buat?"</p>
+                                </div>
+                                <button onClick={() => setView('cta')} className="w-full py-4 bg-white text-black rounded-xl font-bold">Seterusnya</button>
+                            </div>
+                        )}
+
+                        {view === 'cta' && (
+                            <div className="animate-content text-center space-y-8">
+                                <div className="space-y-6">
+                                    <h2 className="text-3xl font-bold text-white">Terima kasih...</h2>
+                                    <p className="text-lg text-white/80 leading-relaxed">Kerana anda jujur dengan diri sendiri —<br/>tentang hubungan anda dengan Allah<br/>dan jasa ibu bapa yang selama ini menjaga anda.</p>
+                                    <div className="h-px bg-white/20 w-1/2 mx-auto"></div>
+                                    <p className="text-xl font-medium text-amber-200">Sekarang, satu soalan yang lebih penting:</p>
+                                    <p className="text-2xl font-semibold leading-tight">Bagaimana dengan diri anda… dan keluarga anda sendiri?</p>
+                                    <p className="text-lg text-white/70 italic">Adakah anda benar-benar berada di landasan yang betul?</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 pt-6">
+                                    <a href="https://fin-think.github.io/landingpage1/" className="py-4 bg-white text-slate-900 rounded-2xl font-bold hover:bg-white/90 transition-all shadow-xl flex items-center justify-center gap-2"><span></span> Family</a>
+                                    <a href="https://producthch.github.io/landingpagess/" className="py-4 bg-white/10 border border-white/20 text-white rounded-2xl font-bold hover:bg-white/20 transition-all flex items-center justify-center gap-2"><span></span> Single</a>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
